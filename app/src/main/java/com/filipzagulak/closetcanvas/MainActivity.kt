@@ -69,7 +69,6 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
 
-                            // Testing if code works so far
                             LaunchedEffect(key1 = state.isSignInSuccessful) {
                                 if(state.isSignInSuccessful) {
                                     Toast.makeText(
@@ -97,6 +96,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
+
                         composable(route = "profile") {
                             ProfileScreen(
                                 userData = googleAuthUiClient.getSignedInUser(),
