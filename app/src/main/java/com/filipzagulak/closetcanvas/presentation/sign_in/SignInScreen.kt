@@ -2,11 +2,13 @@ package com.filipzagulak.closetcanvas.presentation.sign_in
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,28 +37,32 @@ fun SignInScreen(
         }
     }
 
-    Box(
+
+    Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp,8.dp),
-        contentAlignment = Alignment.Center
+            .fillMaxWidth()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.round_logo_no_text),
+            contentDescription = stringResource(id = R.string.logo),
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+        )
         Image(
             painter = painterResource(id = R.drawable.text_no_background),
             contentDescription = stringResource(id = R.string.app_name),
             modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(16.dp)
+                .padding(bottom = 16.dp)
         )
         Button(onClick = onSignInClick,
             modifier = Modifier
-                .align(Alignment.Center)
-                .size(200.dp, 60.dp)
-            ) {
+        ) {
             Text(
                 text = "Sign In",
                 fontSize = 20.sp
-                )
+            )
         }
     }
 }
