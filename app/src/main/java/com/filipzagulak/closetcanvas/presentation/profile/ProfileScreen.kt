@@ -31,11 +31,13 @@ fun ProfileScreen(
     userData: UserData?,
     onSignOut: () -> Unit
 ) {
-    Scaffold (
+    Scaffold(
         topBar = { TopClosetCanvasBar(
             title = "Profile Screen",
             userData = userData,
-            onSignOut = onSignOut
+            canNavigateBack = false,
+            onSignOut = onSignOut,
+            onBackButtonClicked = {}
         ) },
         content = { padding ->
             Column(
