@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,7 +25,7 @@ fun TopClosetCanvasBar(
     title: String,
     userData: UserData?,
     canNavigateBack: Boolean,
-    onSignOut: () -> Unit,
+    onProfileIconClicked: () -> Unit,
     onBackButtonClicked: () -> Unit
 ) {
     TopAppBar(
@@ -44,13 +43,7 @@ fun TopClosetCanvasBar(
             }
         },
         actions = {
-            IconButton(onClick = { onSignOut() } ) {
-                Icon(
-                    imageVector = Icons.Filled.ExitToApp,
-                    contentDescription = "Log out of application"
-                )
-            };
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { onProfileIconClicked() }) {
                 AsyncImage(
                     model = userData?.profilePictureUrl,
                     contentDescription = "Profile",

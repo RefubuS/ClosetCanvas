@@ -29,15 +29,16 @@ import com.filipzagulak.closetcanvas.ui.common.TopClosetCanvasBar
 @Composable
 fun ProfileScreen(
     userData: UserData?,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    onBackButtonClicked: () -> Unit
 ) {
     Scaffold(
         topBar = { TopClosetCanvasBar(
             title = "Profile Screen",
             userData = userData,
-            canNavigateBack = false,
-            onSignOut = onSignOut,
-            onBackButtonClicked = {}
+            canNavigateBack = true,
+            onProfileIconClicked = { },
+            onBackButtonClicked = onBackButtonClicked
         ) },
         content = { padding ->
             Column(

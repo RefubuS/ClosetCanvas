@@ -35,15 +35,16 @@ import com.filipzagulak.closetcanvas.ui.common.TopClosetCanvasBar
 fun ChooseWardrobeScreen(
     state: ChooseWardrobeState,
     userData: UserData?,
-    onSignOut: () -> Unit
+    onBackButtonClicked: () -> Unit,
+    onProfileIconClicked: () -> Unit
 ) {
     Scaffold(
         topBar = { TopClosetCanvasBar(
             title = "Wardrobes Screen",
             userData = userData,
             canNavigateBack = false,
-            onSignOut = onSignOut,
-            onBackButtonClicked = {}
+            onProfileIconClicked = onProfileIconClicked,
+            onBackButtonClicked = onBackButtonClicked
         ) },
         content = { padding ->
             Column(

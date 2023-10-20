@@ -8,13 +8,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.internal.composableLambdaInstance
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -113,8 +110,11 @@ class MainActivity : ComponentActivity() {
                                             Toast.LENGTH_LONG
                                         ).show()
 
-                                        navController.popBackStack()
+                                        navController.navigate("sign_in")
                                     }
+                                },
+                                onBackButtonClicked = {
+                                    navController.navigateUp()
                                 }
                             )
                         }
@@ -129,17 +129,11 @@ class MainActivity : ComponentActivity() {
                             ChooseWardrobeScreen(
                                 state = state,
                                 userData = googleAuthUiClient.getSignedInUser(),
-                                onSignOut = {
-                                    lifecycleScope.launch {
-                                        googleAuthUiClient.signOut()
-                                        Toast.makeText(
-                                            applicationContext,
-                                            "Signed out",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-
-                                        navController.popBackStack()
-                                    }
+                                onProfileIconClicked = {
+                                    navController.navigate("profile")
+                                },
+                                onBackButtonClicked = {
+                                    navController.navigateUp()
                                 }
                             )
                         }
