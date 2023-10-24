@@ -21,6 +21,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.filipzagulak.closetcanvas.presentation.choose_wardrobe.ChooseWardrobeScreen
 import com.filipzagulak.closetcanvas.presentation.choose_wardrobe.ChooseWardrobeViewModel
+import com.filipzagulak.closetcanvas.presentation.create_wardrobe.CreateWardrobeScreen
+import com.filipzagulak.closetcanvas.presentation.create_wardrobe.CreateWardrobeViewModel
 import com.filipzagulak.closetcanvas.presentation.profile.ProfileScreen
 import com.filipzagulak.closetcanvas.presentation.sign_in.GoogleAuthUiClient
 import com.filipzagulak.closetcanvas.presentation.sign_in.SignInScreen
@@ -134,7 +136,18 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onBackButtonClicked = {
                                     navController.navigateUp()
+                                },
+                                onAddButtonClicked = {
+                                    navController.navigate("add_wardrobe")
                                 }
+                            )
+                        }
+                        composable("add_wardrobe") {
+                            val viewModel = viewModel<CreateWardrobeViewModel>()
+                            val state by viewModel.state.collectAsStateWithLifecycle()
+
+                            CreateWardrobeScreen(
+                                state = state
                             )
                         }
                     }

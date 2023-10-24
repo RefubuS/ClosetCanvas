@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -36,7 +38,8 @@ fun ChooseWardrobeScreen(
     state: ChooseWardrobeState,
     userData: UserData?,
     onBackButtonClicked: () -> Unit,
-    onProfileIconClicked: () -> Unit
+    onProfileIconClicked: () -> Unit,
+    onAddButtonClicked: () -> Unit
 ) {
     Scaffold(
         topBar = { TopClosetCanvasBar(
@@ -71,7 +74,15 @@ fun ChooseWardrobeScreen(
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                // FloatingActionButton()
+                FloatingActionButton(
+                    onClick = onAddButtonClicked,
+                    content = {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add wardrobe"
+                        )
+                    }
+                )
             }
         }
     )
@@ -82,7 +93,7 @@ fun WardrobeItem(wardrobeData: WardrobeData) {
     Column(
         modifier = Modifier
             .padding(8.dp)
-            .clickable {  },
+            .clickable { },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(

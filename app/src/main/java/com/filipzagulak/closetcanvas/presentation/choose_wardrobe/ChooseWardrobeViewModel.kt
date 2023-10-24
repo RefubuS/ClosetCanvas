@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.filipzagulak.closetcanvas.data.remote.WardrobeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ChooseWardrobeViewModel: ViewModel() {
@@ -20,7 +19,7 @@ class ChooseWardrobeViewModel: ViewModel() {
         }
     }
 
-    fun resetState() {
+    /* fun resetState() {
         _state.update { ChooseWardrobeState(emptyList()) }
-    }
+    } */
 }
