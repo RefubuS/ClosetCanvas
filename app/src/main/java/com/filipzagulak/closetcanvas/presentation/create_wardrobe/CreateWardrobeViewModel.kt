@@ -2,14 +2,19 @@ package com.filipzagulak.closetcanvas.presentation.create_wardrobe
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.filipzagulak.closetcanvas.data.remote.WardrobeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class CreateWardrobeViewModel: ViewModel() {
+    private val wardrobeRepository = WardrobeRepository()
+
     val wardrobeName = mutableStateOf("")
     val selectedIconColor = mutableStateOf("gray")
     val showCancelConfirmation = mutableStateOf(false)
-    val iconColors = listOf("red", "blue", "gray", "yellow")
+    val iconColors = listOf("gray", "red", "blue", "yellow")
 
     private val _state = MutableStateFlow(CreateWardrobeState(
         wardrobeName,
@@ -20,5 +25,13 @@ class CreateWardrobeViewModel: ViewModel() {
 
     val state = _state.asStateFlow()
 
-
+    fun saveWardrobeToRepository(
+        userId: String?,
+        wardrobeName: String,
+        wardrobeIconColor: String,
+    ) {
+        viewModelScope.launch {
+            wardrobeRepository.addWardrobe(userId, wardrobeName, wardrobeIconColor)
+        }
+    }
 }

@@ -147,7 +147,21 @@ class MainActivity : ComponentActivity() {
                             val state by viewModel.state.collectAsStateWithLifecycle()
 
                             CreateWardrobeScreen(
-                                state = state
+                                state = state,
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                onWardrobeCreated = { userId, wardrobeName, wardrobeIconColor ->
+                                    viewModel.saveWardrobeToRepository(userId, wardrobeName, wardrobeIconColor)
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Wardrobe created successfully",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+
+                                    navController.navigate("wardrobes")
+                                },
+                                onBackButtonClicked = {
+                                    navController.navigateUp()
+                                }
                             )
                         }
                     }

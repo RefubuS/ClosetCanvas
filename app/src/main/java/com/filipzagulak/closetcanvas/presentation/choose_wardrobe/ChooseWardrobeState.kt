@@ -6,5 +6,6 @@ data class ChooseWardrobeState(
 
 data class WardrobeData(
     val wardrobeId: String?,
-    val wardrobeName: String?
+    val wardrobeName: String?,
+    val wardrobeIconColor: String
 )
