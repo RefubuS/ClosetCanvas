@@ -23,6 +23,8 @@ import com.filipzagulak.closetcanvas.presentation.choose_wardrobe.ChooseWardrobe
 import com.filipzagulak.closetcanvas.presentation.choose_wardrobe.ChooseWardrobeViewModel
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe.CreateWardrobeScreen
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe.CreateWardrobeViewModel
+import com.filipzagulak.closetcanvas.presentation.manage_wardrobe.ManageWardrobeScreen
+import com.filipzagulak.closetcanvas.presentation.manage_wardrobe.ManageWardrobeViewModel
 import com.filipzagulak.closetcanvas.presentation.profile.ProfileScreen
 import com.filipzagulak.closetcanvas.presentation.sign_in.GoogleAuthUiClient
 import com.filipzagulak.closetcanvas.presentation.sign_in.SignInScreen
@@ -139,6 +141,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onAddButtonClicked = {
                                     navController.navigate("add_wardrobe")
+                                },
+                                onWardrobeSelected = { wardrobeId ->
+                                    navController.navigate("manage_wardrobe/${wardrobeId}")
                                 }
                             )
                         }
@@ -163,6 +168,31 @@ class MainActivity : ComponentActivity() {
                                     navController.navigateUp()
                                 }
                             )
+                        }
+                        composable("manage_wardrobe/{wardrobeId}") {
+                            val viewModel = viewModel<ManageWardrobeViewModel>()
+                            val state by viewModel.state.collectAsStateWithLifecycle()
+
+                            LaunchedEffect(key1 = Unit) {
+                                viewModel.updateWardrobeId(it.arguments?.getString("wardrobeId"))
+                            }
+
+                            ManageWardrobeScreen(
+                                state = state,
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                onBackButtonClicked = {
+                                    navController.navigateUp()
+                                },
+                                onProfileIconClicked = {
+                                    navController.navigate("profile")
+                                },
+                                navigateToScreen = { screenName ->
+                                    navController.navigate(screenName)
+                                }
+                            )
+                        }
+                        composable("create_wardrobe_layout") {
+
                         }
                     }
                 }

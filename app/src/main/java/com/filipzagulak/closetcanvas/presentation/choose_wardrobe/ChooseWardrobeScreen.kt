@@ -40,7 +40,8 @@ fun ChooseWardrobeScreen(
     userData: UserData?,
     onBackButtonClicked: () -> Unit,
     onProfileIconClicked: () -> Unit,
-    onAddButtonClicked: () -> Unit
+    onAddButtonClicked: () -> Unit,
+    onWardrobeSelected: (String?) -> Unit
 ) {
     Scaffold(
         topBar = { TopClosetCanvasBar(
@@ -70,7 +71,12 @@ fun ChooseWardrobeScreen(
                     horizontalArrangement = Arrangement.Center,
                     content = {
                         items(state.listOfWardrobes) { wardrobeData ->
-                            WardrobeItem(wardrobeData)
+                            WardrobeItem(
+                                wardrobeData,
+                                onWardrobeSelected = { wardrobeId ->
+                                    onWardrobeSelected(wardrobeId)
+                                }
+                            )
                         }
                     }
                 )
@@ -90,11 +96,11 @@ fun ChooseWardrobeScreen(
 }
 
 @Composable
-fun WardrobeItem(wardrobeData: WardrobeData) {
+fun WardrobeItem(wardrobeData: WardrobeData, onWardrobeSelected: (String?) -> Unit) {
     Column(
         modifier = Modifier
             .padding(8.dp)
-            .clickable { },
+            .clickable { onWardrobeSelected(wardrobeData.wardrobeId) },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
