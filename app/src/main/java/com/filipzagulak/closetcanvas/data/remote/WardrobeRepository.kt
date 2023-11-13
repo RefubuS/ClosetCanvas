@@ -5,8 +5,19 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
-class WardrobeRepository {
+class WardrobeRepository private constructor() {
     private val db = Firebase.firestore
+
+    companion object {
+        @Volatile
+        private var instance: WardrobeRepository? = null
+
+        fun getInstance(): WardrobeRepository {
+            return instance ?: synchronized(this) {
+                instance ?: WardrobeRepository().also { instance = it }
+            }
+        }
+    }
 
     suspend fun getWardrobes(userId: String?): List<WardrobeData> {
         val wardrobeList = mutableListOf<WardrobeData>()
@@ -47,6 +58,18 @@ class WardrobeRepository {
             itemsCollection.add(hashMapOf<String, Any>()).await()
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    suspend fun saveWardrobeLayout(
+        wardrobeId: String?,
+        layoutData: List<Map<String, Int>>
+    ) {
+        if(wardrobeId != null) {
+            db.collection("wardrobes")
+                .document(wardrobeId)
+                .update("layoutItemList", layoutData)
+                .await()
         }
     }
 }

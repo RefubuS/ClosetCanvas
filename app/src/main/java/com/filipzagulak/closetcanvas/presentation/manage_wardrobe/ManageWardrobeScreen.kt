@@ -54,7 +54,7 @@ fun ManageWardrobeScreen(
                 contentPadding = padding
             ) {
                 items(state.tileItems) { item ->
-                    ClickableCard(item)
+                    ClickableCard(item, navigateToScreen = navigateToScreen)
                     Spacer(
                         modifier = Modifier
                             .height(16.dp)
@@ -66,7 +66,7 @@ fun ManageWardrobeScreen(
 }
 
 @Composable
-fun ClickableCard(item: TileItem) {
+fun ClickableCard(item: TileItem, navigateToScreen: (String) -> Unit) {
     var isClicked by remember {
         mutableStateOf(false)
     }
@@ -97,7 +97,7 @@ fun ClickableCard(item: TileItem) {
                 style = MaterialTheme.typography.labelLarge
             )
             if(isClicked) {
-
+                navigateToScreen(item.routeName)
             }
         }
     }

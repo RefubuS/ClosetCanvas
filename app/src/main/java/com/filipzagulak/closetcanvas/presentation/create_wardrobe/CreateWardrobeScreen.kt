@@ -33,7 +33,6 @@ import com.filipzagulak.closetcanvas.presentation.sign_in.UserData
 import com.filipzagulak.closetcanvas.ui.common.TopClosetCanvasBar
 import com.filipzagulak.closetcanvas.ui.common.createIcon
 
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun CreateWardrobeScreen(

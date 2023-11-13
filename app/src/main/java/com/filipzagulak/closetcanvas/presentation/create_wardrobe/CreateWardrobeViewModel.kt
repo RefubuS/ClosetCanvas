@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CreateWardrobeViewModel: ViewModel() {
-    private val wardrobeRepository = WardrobeRepository()
+    private val wardrobeRepository = WardrobeRepository.getInstance()
 
     val wardrobeName = mutableStateOf("")
     val selectedIconColor = mutableStateOf("gray")

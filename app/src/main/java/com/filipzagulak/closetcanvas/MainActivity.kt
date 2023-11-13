@@ -23,6 +23,8 @@ import com.filipzagulak.closetcanvas.presentation.choose_wardrobe.ChooseWardrobe
 import com.filipzagulak.closetcanvas.presentation.choose_wardrobe.ChooseWardrobeViewModel
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe.CreateWardrobeScreen
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe.CreateWardrobeViewModel
+import com.filipzagulak.closetcanvas.presentation.create_wardrobe_layout.CreateWardrobeLayoutScreen
+import com.filipzagulak.closetcanvas.presentation.create_wardrobe_layout.CreateWardrobeLayoutViewModel
 import com.filipzagulak.closetcanvas.presentation.manage_wardrobe.ManageWardrobeScreen
 import com.filipzagulak.closetcanvas.presentation.manage_wardrobe.ManageWardrobeViewModel
 import com.filipzagulak.closetcanvas.presentation.profile.ProfileScreen
@@ -187,12 +189,29 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate("profile")
                                 },
                                 navigateToScreen = { screenName ->
-                                    navController.navigate(screenName)
+                                    navController.navigate(screenName + "/${state.wardrobeId}")
                                 }
                             )
                         }
-                        composable("create_wardrobe_layout") {
+                        composable("create_wardrobe_layout/{wardrobeId}") { navBackStackEntry ->
+                            val viewModel = viewModel<CreateWardrobeLayoutViewModel>()
+                            val state by viewModel.state.collectAsStateWithLifecycle()
+                            val wardrobeId = navBackStackEntry.arguments?.getString("wardrobeId") ?: ""
 
+                            CreateWardrobeLayoutScreen(
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                state = state,
+                                onSaveButtonClicked = { layoutItemList ->
+                                    viewModel.saveLayoutToRepository(wardrobeId = wardrobeId, layoutItemList = layoutItemList)
+                                    navController.navigateUp()
+                                },
+                                onBackButtonClicked = {
+                                    navController.navigateUp()
+                                },
+                                onOptionClicked = { itemId, imageIdToSwap ->
+                                    viewModel.updateItemList(itemId = itemId, newImageResourceId = imageIdToSwap)
+                                }
+                            )
                         }
                     }
                 }

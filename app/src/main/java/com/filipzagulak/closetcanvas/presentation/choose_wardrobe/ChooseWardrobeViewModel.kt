@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ChooseWardrobeViewModel: ViewModel() {
-    private val wardrobeRepository = WardrobeRepository()
+    private val wardrobeRepository = WardrobeRepository.getInstance()
     private val _state = MutableStateFlow(ChooseWardrobeState(emptyList()))
     val state = _state.asStateFlow()
 

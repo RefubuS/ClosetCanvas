@@ -7,5 +7,6 @@ data class ManageWardrobeState(
 
 data class TileItem(
     val text: String,
-    val iconRes: Int
+    val iconRes: Int,
+    val routeName: String
 )
