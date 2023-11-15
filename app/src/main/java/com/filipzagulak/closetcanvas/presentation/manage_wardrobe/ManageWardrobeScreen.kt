@@ -66,7 +66,9 @@ fun ClickableCard(item: TileItem, navigateToScreen: (String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { navigateToScreen(item.routeName) }
+            .clickable {
+                navigateToScreen(item.routeName)
+            }
             .padding(4.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(16.dp)
