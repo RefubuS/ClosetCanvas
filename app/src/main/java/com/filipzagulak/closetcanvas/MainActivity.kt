@@ -31,6 +31,8 @@ import com.filipzagulak.closetcanvas.presentation.profile.ProfileScreen
 import com.filipzagulak.closetcanvas.presentation.sign_in.GoogleAuthUiClient
 import com.filipzagulak.closetcanvas.presentation.sign_in.SignInScreen
 import com.filipzagulak.closetcanvas.presentation.sign_in.SignInViewModel
+import com.filipzagulak.closetcanvas.presentation.view_wardrobe_layout.ViewLayoutScreen
+import com.filipzagulak.closetcanvas.presentation.view_wardrobe_layout.ViewLayoutViewModel
 import com.filipzagulak.closetcanvas.ui.theme.ClosetCanvasTheme
 import com.google.android.gms.auth.api.identity.Identity
 import kotlinx.coroutines.launch
@@ -212,6 +214,30 @@ class MainActivity : ComponentActivity() {
                                     viewModel.updateItemList(itemId = itemId, newImageResourceId = imageIdToSwap)
                                 }
                             )
+                        }
+                        composable("view_wardrobe_layout/{wardrobeId}") { navBackStackEntry ->
+                            val viewModel = viewModel<ViewLayoutViewModel>()
+                            val state by viewModel.state.collectAsStateWithLifecycle()
+                            val wardrobeId = navBackStackEntry.arguments?.getString("wardrobeId") ?: ""
+
+                            LaunchedEffect(key1 = Unit) {
+                                viewModel.initializeStateWithRemoteData(wardrobeId)
+                            }
+
+                            ViewLayoutScreen(
+                                state = state,
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                onBackButtonClicked = {
+                                    navController.navigateUp()
+                                },
+                                onLayoutItemClicked = { placeId ->
+                                    navController.navigate("view_items/${wardrobeId}/${placeId}")
+                                }
+                            )
+                        }
+                        composable("view_items/{wardrobeId}/{placeId}") { navBackStackEntry ->
+                            val wardrobeId = navBackStackEntry.arguments?.getString("wardrobeId") ?: ""
+
                         }
                     }
                 }

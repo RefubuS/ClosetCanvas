@@ -1,6 +1,7 @@
 package com.filipzagulak.closetcanvas.data.remote
 
 import com.filipzagulak.closetcanvas.presentation.choose_wardrobe.WardrobeData
+import com.filipzagulak.closetcanvas.presentation.create_wardrobe_layout.LayoutItem
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -70,6 +71,22 @@ class WardrobeRepository private constructor() {
                 .document(wardrobeId)
                 .update("layoutItemList", layoutData)
                 .await()
+        }
+    }
+
+    suspend fun getWardrobeLayoutData(wardrobeId: String): List<LayoutItem> {
+        val documentSnapshot = db.collection("wardrobes")
+            .document(wardrobeId)
+            .get()
+            .await()
+
+        val layoutData = documentSnapshot["layoutItemList"] as? List<Map<String, Long>> ?: emptyList()
+
+        return layoutData.map {
+            LayoutItem(
+                itemId = it["spaceId"]?.toInt() ?: 0,
+                resourceId = it["resourceId"]?.toInt() ?: 0
+            )
         }
     }
 }
