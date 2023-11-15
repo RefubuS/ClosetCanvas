@@ -20,10 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -67,14 +63,10 @@ fun ManageWardrobeScreen(
 
 @Composable
 fun ClickableCard(item: TileItem, navigateToScreen: (String) -> Unit) {
-    var isClicked by remember {
-        mutableStateOf(false)
-    }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { isClicked = true }
+            .clickable { navigateToScreen(item.routeName) }
             .padding(4.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(16.dp)
@@ -96,9 +88,6 @@ fun ClickableCard(item: TileItem, navigateToScreen: (String) -> Unit) {
                 text = item.text,
                 style = MaterialTheme.typography.labelLarge
             )
-            if(isClicked) {
-                navigateToScreen(item.routeName)
-            }
         }
     }
 }
