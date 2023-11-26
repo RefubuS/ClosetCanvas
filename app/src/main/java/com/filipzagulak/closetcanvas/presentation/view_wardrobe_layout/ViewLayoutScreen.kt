@@ -30,15 +30,16 @@ fun ViewLayoutScreen(
     state: ViewLayoutState,
     userData: UserData?,
     onBackButtonClicked: () -> Unit,
+    onProfileIconClicked: () -> Unit,
     onLayoutItemClicked: (Int) -> Unit
 ) {
     Scaffold(
         topBar = {
             TopClosetCanvasBar(
-                title = "Create Wardrobe Layout",
+                title = "Select Space In Your Wardrobe",
                 userData = userData,
                 canNavigateBack = true,
-                onProfileIconClicked = { },
+                onProfileIconClicked = onProfileIconClicked,
                 onBackButtonClicked = onBackButtonClicked
             )
         }

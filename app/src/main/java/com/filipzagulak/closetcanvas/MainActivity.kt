@@ -19,6 +19,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.filipzagulak.closetcanvas.presentation.add_item.AddItemScreen
+import com.filipzagulak.closetcanvas.presentation.add_item.AddItemViewModel
 import com.filipzagulak.closetcanvas.presentation.choose_wardrobe.ChooseWardrobeScreen
 import com.filipzagulak.closetcanvas.presentation.choose_wardrobe.ChooseWardrobeViewModel
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe.CreateWardrobeScreen
@@ -31,6 +33,8 @@ import com.filipzagulak.closetcanvas.presentation.profile.ProfileScreen
 import com.filipzagulak.closetcanvas.presentation.sign_in.GoogleAuthUiClient
 import com.filipzagulak.closetcanvas.presentation.sign_in.SignInScreen
 import com.filipzagulak.closetcanvas.presentation.sign_in.SignInViewModel
+import com.filipzagulak.closetcanvas.presentation.view_items.ViewItemsScreen
+import com.filipzagulak.closetcanvas.presentation.view_items.ViewItemsViewModel
 import com.filipzagulak.closetcanvas.presentation.view_wardrobe_layout.ViewLayoutScreen
 import com.filipzagulak.closetcanvas.presentation.view_wardrobe_layout.ViewLayoutViewModel
 import com.filipzagulak.closetcanvas.ui.theme.ClosetCanvasTheme
@@ -227,17 +231,78 @@ class MainActivity : ComponentActivity() {
                             ViewLayoutScreen(
                                 state = state,
                                 userData = googleAuthUiClient.getSignedInUser(),
+                                onProfileIconClicked = {
+                                    navController.navigate("profile")
+                                },
                                 onBackButtonClicked = {
                                     navController.navigateUp()
                                 },
-                                onLayoutItemClicked = { placeId ->
-                                    navController.navigate("view_items/${wardrobeId}/${placeId}")
+                                onLayoutItemClicked = { spaceId ->
+                                    navController.navigate("view_items/${wardrobeId}/${spaceId}")
                                 }
                             )
                         }
-                        composable("view_items/{wardrobeId}/{placeId}") { navBackStackEntry ->
+                        composable("view_items/{wardrobeId}/{spaceId}") { navBackStackEntry ->
+                            val viewModel = viewModel<ViewItemsViewModel>()
+                            val state by viewModel.state.collectAsStateWithLifecycle()
                             val wardrobeId = navBackStackEntry.arguments?.getString("wardrobeId") ?: ""
+                            val spaceId = navBackStackEntry.arguments?.getString("spaceId") ?: ""
 
+                            LaunchedEffect(key1 = Unit) {
+                                viewModel.fetchItemsFromFirebase(
+                                    spaceId = spaceId.toInt(),
+                                    wardrobeId = wardrobeId
+                                )
+                            }
+
+                            ViewItemsScreen(
+                                state = state,
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                onBackButtonClicked = {
+                                    navController.navigateUp()
+                                },
+                                onProfileIconClicked = {
+                                    navController.navigate("profile")
+                                },
+                                onAddButtonClicked = {
+                                    navController.navigate("add_item/${wardrobeId}/${spaceId}")
+                                }
+                            )
+                        }
+                        composable("add_item/{wardrobeId}/{spaceId}") { navBackStackEntry ->
+                            val viewModel = viewModel<AddItemViewModel>()
+                            val state by viewModel.state.collectAsStateWithLifecycle()
+                            val wardrobeId = navBackStackEntry.arguments?.getString("wardrobeId") ?: ""
+                            val spaceId = navBackStackEntry.arguments?.getString("spaceId") ?: ""
+
+                            AddItemScreen(
+                                addItemState = state,
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                onProfileIconClicked = {
+                                    navController.navigate("profile")
+                                },
+                                onBackButtonClicked = {
+                                    navController.navigateUp()
+                                },
+                                onTagClicked = { tag ->
+                                    viewModel.toggleTag(tag)
+                                },
+                                onSaveButtonClicked = { fileUri, tags, name, description, category, dateWashed ->
+                                    lifecycleScope.launch {
+                                        viewModel.saveItem(
+                                            imageUri = fileUri,
+                                            wardrobeId = wardrobeId,
+                                            wardrobeSpaceId = spaceId.toInt(),
+                                            itemTags = tags,
+                                            itemName = name,
+                                            itemDescription = description,
+                                            itemCategory = category,
+                                            lastWashed = dateWashed
+                                        )
+                                        navController.navigateUp()
+                                    }
+                                }
+                            )
                         }
                     }
                 }
