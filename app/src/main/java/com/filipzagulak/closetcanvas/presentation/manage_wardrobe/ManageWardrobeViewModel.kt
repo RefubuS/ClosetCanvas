@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.asStateFlow
 class ManageWardrobeViewModel: ViewModel() {
     val tileItems = listOf(
         TileItem("Add wardrobe layout", R.drawable.baseline_add_24, "create_wardrobe_layout"),
-        TileItem("View wardrobe layout", R.drawable.baseline_wardrobe_layout_24, "view_wardrobe_layout")
+        TileItem("View wardrobe layout", R.drawable.baseline_wardrobe_layout_24, "view_wardrobe_layout"),
+        TileItem("View all items", R.drawable.baseline_dynamic_feed_24, "view_all_items")
     )
 
     private val _state = MutableStateFlow(

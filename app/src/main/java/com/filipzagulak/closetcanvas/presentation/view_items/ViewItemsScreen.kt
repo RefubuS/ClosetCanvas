@@ -2,9 +2,9 @@ package com.filipzagulak.closetcanvas.presentation.view_items
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -42,8 +42,8 @@ fun ViewItemsScreen(
             }
         ) }
     ) { padding ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
+        LazyVerticalStaggeredGrid(
+            columns = StaggeredGridCells.Fixed(3),
             modifier = Modifier
                 .padding(padding),
             content = {

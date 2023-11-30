@@ -3,7 +3,7 @@ package com.filipzagulak.closetcanvas.presentation.create_wardrobe_layout
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -69,12 +69,13 @@ fun CreateWardrobeLayoutScreen(
                     LayoutItemComposable(
                         layoutItem = layoutItem,
                         availableOptions = state.availableOptions,
-                        onOptionClicked = onOptionClicked,
-                        padding = padding
+                        onOptionClicked = onOptionClicked
                     )
                 }
             },
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier
+                .padding(padding)
         )
     }
 }
@@ -83,42 +84,43 @@ fun CreateWardrobeLayoutScreen(
 fun LayoutItemComposable(
     layoutItem: LayoutItem,
     availableOptions: List<Pair<String, Int>>,
-    onOptionClicked: (Int, Int) -> Unit,
-    padding: PaddingValues
+    onOptionClicked: (Int, Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Card(
-        modifier = Modifier
-            .clickable {
-                expanded = true
-            }
-            .fillMaxWidth()
-            .padding(padding),
-        content = {
-            Image(
-                painter = painterResource(id = layoutItem.resourceId),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(MaterialTheme.shapes.large)
-                    .padding(4.dp)
-            )
-        }
-    )
-
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false },
-    ) {
-        availableOptions.forEach { (text, resourceId) ->
-            DropdownMenuItem(
-                text = { Text(text) },
-                onClick = {
-                    expanded = false
-                    onOptionClicked(layoutItem.itemId, resourceId)
+    Box(modifier = Modifier) {
+        Card(
+            modifier = Modifier
+                .clickable {
+                    expanded = true
                 }
-            )
+                .fillMaxWidth()
+                .padding(4.dp),
+            content = {
+                Image(
+                    painter = painterResource(id = layoutItem.resourceId),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(96.dp)
+                        .clip(MaterialTheme.shapes.large)
+                        .padding(2.dp)
+                )
+            }
+        )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            availableOptions.forEach { (text, resourceId) ->
+                DropdownMenuItem(
+                    text = { Text(text) },
+                    onClick = {
+                        expanded = false
+                        onOptionClicked(layoutItem.itemId, resourceId)
+                    }
+                )
+            }
         }
     }
 }

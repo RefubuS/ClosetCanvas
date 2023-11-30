@@ -3,7 +3,6 @@ package com.filipzagulak.closetcanvas.presentation.view_wardrobe_layout
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -50,12 +49,13 @@ fun ViewLayoutScreen(
                 items(state.wardrobeLayout) { layoutItem ->
                     LayoutItemComposable(
                         layoutItem = layoutItem,
-                        padding = padding,
                         onLayoutItemClicked = onLayoutItemClicked
                     )
                 }
             },
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier
+                .padding(padding)
         )
     }
 }
@@ -63,8 +63,7 @@ fun ViewLayoutScreen(
 @Composable
 fun LayoutItemComposable(
     layoutItem: LayoutItem,
-    onLayoutItemClicked: (Int) -> Unit,
-    padding: PaddingValues
+    onLayoutItemClicked: (Int) -> Unit
 ) {
     val resourceId = when (layoutItem.resourceId) {
         R.drawable.baseline_add_24 -> R.drawable.baseline_crop_free_24
@@ -74,18 +73,20 @@ fun LayoutItemComposable(
     Card(
         modifier = Modifier
             .clickable {
-                onLayoutItemClicked(layoutItem.itemId)
+                if(resourceId != R.drawable.baseline_crop_free_24) {
+                    onLayoutItemClicked(layoutItem.itemId)
+                }
             }
             .fillMaxWidth()
-            .padding(padding),
+            .padding(4.dp),
         content = {
             Image(
                 painter = painterResource(id = resourceId),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(64.dp)
+                    .size(96.dp)
                     .clip(MaterialTheme.shapes.large)
-                    .padding(4.dp)
+                    .padding(2.dp)
             )
         }
     )

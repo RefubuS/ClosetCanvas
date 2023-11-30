@@ -1,10 +1,11 @@
 package com.filipzagulak.closetcanvas.data.remote
 
 import android.util.Log
+import com.filipzagulak.closetcanvas.data.local.WardrobeItem
 import com.filipzagulak.closetcanvas.presentation.add_item.ItemDTO
 import com.filipzagulak.closetcanvas.presentation.choose_wardrobe.WardrobeData
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe_layout.LayoutItem
-import com.filipzagulak.closetcanvas.presentation.view_items.WardrobeItem
+import com.filipzagulak.closetcanvas.presentation.item_details.ItemDetailsState
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -31,7 +32,7 @@ class WardrobeRepository private constructor() {
             .get()
             .await()
 
-        for(document in querySnapshot.documents) {
+        for (document in querySnapshot.documents) {
             val wardrobeId = document.getString("wardrobeId") ?: ""
             val wardrobeName = document.getString("wardrobeName") ?: ""
             val wardrobeIconColor = document.getString("wardrobeIconColor") ?: ""
@@ -69,7 +70,7 @@ class WardrobeRepository private constructor() {
         wardrobeId: String?,
         layoutData: List<Map<String, Int>>
     ) {
-        if(wardrobeId != null) {
+        if (wardrobeId != null) {
             db.collection("wardrobes")
                 .document(wardrobeId)
                 .update("layoutItemList", layoutData)
@@ -83,7 +84,8 @@ class WardrobeRepository private constructor() {
             .get()
             .await()
 
-        val layoutData = documentSnapshot["layoutItemList"] as? List<Map<String, Long>> ?: emptyList()
+        val layoutData =
+            documentSnapshot["layoutItemList"] as? List<Map<String, Long>> ?: emptyList()
 
         return layoutData.map {
             LayoutItem(
@@ -93,7 +95,11 @@ class WardrobeRepository private constructor() {
         }
     }
 
-    fun getItemsFromSpaceInWardrobe(spaceId: Int, wardrobeId: String, completion: (List<WardrobeItem>) -> Unit) {
+    fun getItemsFromSpaceInWardrobe(
+        spaceId: Int,
+        wardrobeId: String,
+        completion: (List<WardrobeItem>) -> Unit
+    ) {
         db.collection("wardrobes")
             .document(wardrobeId)
             .collection("items")
@@ -102,7 +108,7 @@ class WardrobeRepository private constructor() {
             .addOnSuccessListener { result ->
                 val itemList = mutableListOf<WardrobeItem>()
 
-                for(document in result) {
+                for (document in result) {
                     val itemId = document.getString("itemId") ?: ""
                     val itemPictureUrl = document.getString("itemPictureUrl") ?: ""
 
@@ -140,5 +146,52 @@ class WardrobeRepository private constructor() {
         )
 
         newItemDocumentReference.set(itemDataHashMap).await()
+    }
+
+    fun getAllItems(wardrobeId: String, completion: (List<WardrobeItem>) -> Unit) {
+        db.collection("wardrobes")
+            .document(wardrobeId)
+            .collection("items")
+            .get()
+            .addOnSuccessListener { result ->
+                val itemList = mutableListOf<WardrobeItem>()
+
+                for (document in result) {
+                    val itemId = document.getString("itemId") ?: ""
+                    val itemPictureUrl = document.getString("itemPictureUrl") ?: ""
+
+                    val wardrobeItem = WardrobeItem(
+                        itemId = itemId,
+                        wardrobeId = wardrobeId,
+                        itemPictureUrl = itemPictureUrl
+                    )
+                    itemList.add(wardrobeItem)
+                }
+                completion(itemList)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("WardrobeRespository", "Error fetching items", exception)
+                completion(emptyList())
+            }
+    }
+
+    suspend fun getItemDetails(wardrobeId: String, itemId: String): ItemDetailsState {
+        val documentSnapshot = db.collection("wardrobes")
+            .document(wardrobeId)
+            .collection("items")
+            .document(itemId)
+            .get()
+            .await()
+
+        val itemData = ItemDetailsState(
+            itemPictureUrl = documentSnapshot.getString("itemPictureUrl") ?: "",
+            itemName = documentSnapshot.getString("itemName") ?: "",
+            itemTags = documentSnapshot.get("itemTags") as? List<String> ?: emptyList(),
+            description = documentSnapshot.getString("itemDescription") ?: "",
+            itemCategory = documentSnapshot.getString("itemCategory") ?: "",
+            lastWashed = documentSnapshot.getString("lastWashed") ?: ""
+        )
+
+        return itemData
     }
 }

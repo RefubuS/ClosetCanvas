@@ -27,12 +27,16 @@ import com.filipzagulak.closetcanvas.presentation.create_wardrobe.CreateWardrobe
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe.CreateWardrobeViewModel
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe_layout.CreateWardrobeLayoutScreen
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe_layout.CreateWardrobeLayoutViewModel
+import com.filipzagulak.closetcanvas.presentation.item_details.ItemDetailsScreen
+import com.filipzagulak.closetcanvas.presentation.item_details.ItemDetailsViewModel
 import com.filipzagulak.closetcanvas.presentation.manage_wardrobe.ManageWardrobeScreen
 import com.filipzagulak.closetcanvas.presentation.manage_wardrobe.ManageWardrobeViewModel
 import com.filipzagulak.closetcanvas.presentation.profile.ProfileScreen
 import com.filipzagulak.closetcanvas.presentation.sign_in.GoogleAuthUiClient
 import com.filipzagulak.closetcanvas.presentation.sign_in.SignInScreen
 import com.filipzagulak.closetcanvas.presentation.sign_in.SignInViewModel
+import com.filipzagulak.closetcanvas.presentation.view_all_items.ViewAllItemsScreen
+import com.filipzagulak.closetcanvas.presentation.view_all_items.ViewAllItemsViewModel
 import com.filipzagulak.closetcanvas.presentation.view_items.ViewItemsScreen
 import com.filipzagulak.closetcanvas.presentation.view_items.ViewItemsViewModel
 import com.filipzagulak.closetcanvas.presentation.view_wardrobe_layout.ViewLayoutScreen
@@ -303,6 +307,64 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             )
+                        }
+                        composable("view_all_items/{wardrobeId}") { navBackStackEntry ->
+                            val viewModel = viewModel<ViewAllItemsViewModel>()
+                            val state by viewModel.state.collectAsStateWithLifecycle()
+                            val wardrobeId = navBackStackEntry.arguments?.getString("wardrobeId") ?: ""
+
+                            LaunchedEffect(key1 = Unit) {
+                                viewModel.fetchAllItemsFromFirebase(
+                                    wardrobeId = wardrobeId
+                                )
+                            }
+
+                            ViewAllItemsScreen(
+                                state = state,
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                onProfileIconClicked = {
+                                    navController.navigate("profile")
+                                },
+                                onBackButtonClicked = {
+                                    navController.navigateUp()
+                                },
+                                onNextClicked = {
+
+                                },
+                                viewItemDetails = { itemId ->
+                                    navController.navigate("view_item_details/${wardrobeId}/${itemId}")
+                                },
+                                onItemLongClick = { itemId ->
+                                    viewModel.toggleItemSelection(itemId)
+                                }
+                            )
+                        }
+                        composable("view_item_details/{wardrobeId}/{itemId}") { navBackStackEntry ->
+                            val viewModel = viewModel<ItemDetailsViewModel>()
+                            val state by viewModel.state.collectAsStateWithLifecycle()
+                            val wardrobeId = navBackStackEntry.arguments?.getString("wardrobeId") ?: ""
+                            val itemId = navBackStackEntry.arguments?.getString("itemId") ?: ""
+
+                            LaunchedEffect(key1 = Unit) {
+                                viewModel.initalizeItemDetails(
+                                    wardrobeId = wardrobeId,
+                                    itemId = itemId
+                                )
+                            }
+
+                            ItemDetailsScreen(
+                                state = state,
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                onProfileIconClicked = {
+                                    navController.navigate("profile")
+                                },
+                                onBackButtonClicked = {
+                                    navController.navigateUp()
+                                }
+                            )
+                        }
+                        composable("create_collection") {
+
                         }
                     }
                 }
