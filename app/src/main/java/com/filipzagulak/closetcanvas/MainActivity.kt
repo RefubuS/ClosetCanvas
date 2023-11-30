@@ -336,6 +336,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onItemLongClick = { itemId ->
                                     viewModel.toggleItemSelection(itemId)
+                                },
+                                filterItems = { nameFilter, selectedCategory, selectedTags ->
+                                    viewModel.filterItems(wardrobeId, nameFilter, selectedCategory, selectedTags)
                                 }
                             )
                         }

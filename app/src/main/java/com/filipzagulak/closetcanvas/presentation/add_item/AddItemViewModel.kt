@@ -129,7 +129,7 @@ class AddItemViewModel: ViewModel() {
         itemCategory: String,
         lastWashed: String
     ) {
-        val downloadUrl = suspendCoroutine<String> { continuation ->
+        val downloadUrl = suspendCoroutine { continuation ->
             viewModelScope.launch {
                 val url = wardrobeStorage.savePhotoToStorage(imageUri)
                 continuation.resume(url)
@@ -149,5 +149,13 @@ class AddItemViewModel: ViewModel() {
         viewModelScope.launch {
             wardrobeRepository.saveItemToWardrobe(wardrobeId, newItem)
         }
+    }
+
+    fun getAvailableTags(): List<String> {
+        return availableTags
+    }
+
+    fun getCategories(): List<String> {
+        return categories
     }
 }

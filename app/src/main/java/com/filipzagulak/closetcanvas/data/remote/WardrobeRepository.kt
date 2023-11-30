@@ -6,6 +6,7 @@ import com.filipzagulak.closetcanvas.presentation.add_item.ItemDTO
 import com.filipzagulak.closetcanvas.presentation.choose_wardrobe.WardrobeData
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe_layout.LayoutItem
 import com.filipzagulak.closetcanvas.presentation.item_details.ItemDetailsState
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -122,7 +123,7 @@ class WardrobeRepository private constructor() {
                 completion(itemList)
             }
             .addOnFailureListener { exception ->
-                Log.e("WardrobeRespository", "Error fetching items", exception)
+                Log.e("WardrobeRepository", "Error fetching items", exception)
                 completion(emptyList())
             }
     }
@@ -170,7 +171,7 @@ class WardrobeRepository private constructor() {
                 completion(itemList)
             }
             .addOnFailureListener { exception ->
-                Log.e("WardrobeRespository", "Error fetching items", exception)
+                Log.e("WardrobeRepository", "Error fetching items", exception)
                 completion(emptyList())
             }
     }
@@ -183,7 +184,7 @@ class WardrobeRepository private constructor() {
             .get()
             .await()
 
-        val itemData = ItemDetailsState(
+        return ItemDetailsState(
             itemPictureUrl = documentSnapshot.getString("itemPictureUrl") ?: "",
             itemName = documentSnapshot.getString("itemName") ?: "",
             itemTags = documentSnapshot.get("itemTags") as? List<String> ?: emptyList(),
@@ -192,6 +193,54 @@ class WardrobeRepository private constructor() {
             lastWashed = documentSnapshot.getString("lastWashed") ?: ""
         )
 
-        return itemData
+        //return itemData
+    }
+
+    fun getFilteredItems(
+        wardrobeId: String,
+        nameFilter: String,
+        selectedCategory: String,
+        selectedTags: Set<String>,
+        completion: (List<WardrobeItem>) -> Unit
+    ) {
+        val itemsCollection = db.collection("wardrobes")
+            .document(wardrobeId)
+            .collection("items")
+
+        var query: Query = itemsCollection
+
+        if(nameFilter.isNotEmpty()) {
+            query = query.orderBy("itemName")
+                .startAt(nameFilter)
+                .endAt("$nameFilter~")
+        }
+        if(selectedCategory.isNotEmpty()) {
+            query = query.whereEqualTo("itemCategory", selectedCategory)
+        }
+        if(selectedTags.isNotEmpty()) {
+            query = query.whereArrayContainsAny("itemTags", selectedTags.toList())
+        }
+
+        query.get()
+            .addOnSuccessListener { result ->
+                val itemList = mutableListOf<WardrobeItem>()
+
+                for (document in result) {
+                    val itemId = document.getString("itemId") ?: ""
+                    val itemPictureUrl = document.getString("itemPictureUrl") ?: ""
+
+                    val wardrobeItem = WardrobeItem(
+                        itemId = itemId,
+                        wardrobeId = wardrobeId,
+                        itemPictureUrl = itemPictureUrl
+                    )
+                    itemList.add(wardrobeItem)
+                }
+                completion(itemList)
+            }
+            .addOnFailureListener { exception ->
+                completion(emptyList())
+                exception.printStackTrace()
+            }
     }
 }

@@ -2,7 +2,6 @@ package com.filipzagulak.closetcanvas.presentation.item_details
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -51,19 +49,13 @@ fun ItemDetailsScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
-                Box(
+                AsyncImage(
+                    model = state.itemPictureUrl,
+                    contentDescription = null,
                     modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
                         .size(256.dp)
-                ) {
-                    AsyncImage(
-                        model = state.itemPictureUrl,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxSize()
-                    )
-                }
+                        .fillMaxSize()
+                )
                 Text(
                     text = state.itemName,
                     style = MaterialTheme.typography.headlineLarge,

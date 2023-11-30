@@ -31,4 +31,20 @@ class ViewAllItemsViewModel: ViewModel() {
             }
         )
     }
+
+    fun filterItems(
+        wardrobeId: String,
+        nameFilter: String,
+        selectedCategory: String,
+        selectedTags: Set<String>
+    ) {
+        wardrobeRepository.getFilteredItems(
+            wardrobeId,
+            nameFilter,
+            selectedCategory,
+            selectedTags
+        ) { filteredItemList ->
+            _state.value = _state.value.copy(itemList = filteredItemList)
+        }
+    }
 }
