@@ -60,8 +60,10 @@ class WardrobeRepository private constructor() {
             wardrobeReference.set(newWardrobeData).await()
 
             val itemsCollection = wardrobeReference.collection("items")
-
             itemsCollection.add(hashMapOf<String, Any>()).await()
+
+            val collectionsCollection = wardrobeReference.collection("collections")
+            collectionsCollection.add(hashMapOf<String, Any>()).await()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -192,8 +194,6 @@ class WardrobeRepository private constructor() {
             itemCategory = documentSnapshot.getString("itemCategory") ?: "",
             lastWashed = documentSnapshot.getString("lastWashed") ?: ""
         )
-
-        //return itemData
     }
 
     fun getFilteredItems(
@@ -242,5 +242,18 @@ class WardrobeRepository private constructor() {
                 completion(emptyList())
                 exception.printStackTrace()
             }
+    }
+
+    suspend fun saveCollection(wardrobeId: String, collectionName: String, selectedItems: List<String>) {
+        val wardrobeDocumentReference = db.collection("wardrobes").document(wardrobeId)
+        val newCollectionDocumentReference = wardrobeDocumentReference.collection("collections").document()
+
+        val collectionData = hashMapOf(
+            "collectionId" to newCollectionDocumentReference.id,
+            "collectionName" to collectionName,
+            "itemsInCollection" to selectedItems
+        )
+
+        newCollectionDocumentReference.set(collectionData).await()
     }
 }

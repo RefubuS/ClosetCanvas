@@ -62,13 +62,15 @@ fun ViewAllItemsScreen(
     userData: UserData?,
     onProfileIconClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
-    onNextClicked: () -> Unit,
     viewItemDetails: (String) -> Unit,
     onItemLongClick: (String) -> Unit,
-    filterItems: (String, String, Set<String>) -> Unit
+    filterItems: (String, String, Set<String>) -> Unit,
+    onSaveCollectionClicked: (String) -> Unit
 ) {
     var numberSelected by remember { mutableIntStateOf(0) }
     var filteringDialogOpened by remember { mutableStateOf(false) }
+    var saveCollectionDialogOpened by remember { mutableStateOf(false) }
+    var collectionName by remember { mutableStateOf("") }
 
     val viewModelHelper = AddItemViewModel()
     val availableCategories = viewModelHelper.getCategories()
@@ -105,7 +107,9 @@ fun ViewAllItemsScreen(
                 )
                 if(numberSelected != 0) {
                     IconButton(
-                        onClick = onNextClicked
+                        onClick = {
+                            saveCollectionDialogOpened = true
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Done,
@@ -152,7 +156,7 @@ fun ViewAllItemsScreen(
                             .then(
                                 if (state.selectedItems.contains(wardrobeItem.itemId)) {
                                     Modifier.border(
-                                        width = 2.dp,
+                                        width = 4.dp,
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                 } else Modifier
@@ -287,6 +291,67 @@ fun ViewAllItemsScreen(
                             }
                         ) {
                             Text("Filter")
+                        }
+                    }
+                }
+            }
+        }
+        if(saveCollectionDialogOpened) {
+            Dialog(
+                onDismissRequest = {
+                    saveCollectionDialogOpened = false
+                }
+            ) {
+                Card(
+                    modifier = Modifier
+                        .height(200.dp),
+                    shape = RoundedCornerShape(16.dp),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .padding(4.dp),
+                            text = "Save collection?",
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .padding(4.dp),
+                            value = collectionName,
+                            label = {
+                                Text("Collection name")
+                            },
+                            onValueChange = {
+                                collectionName = it
+                            }
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            Button(
+                                onClick = {
+                                    onSaveCollectionClicked(collectionName)
+                                    saveCollectionDialogOpened = false
+                                }
+                            ) {
+                                Text("Save")
+                            }
+                            Button(
+                                onClick = {
+                                    saveCollectionDialogOpened = false
+                                }
+                            ) {
+                                Text("Cancel")
+                            }
                         }
                     }
                 }

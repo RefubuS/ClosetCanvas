@@ -328,9 +328,6 @@ class MainActivity : ComponentActivity() {
                                 onBackButtonClicked = {
                                     navController.navigateUp()
                                 },
-                                onNextClicked = {
-
-                                },
                                 viewItemDetails = { itemId ->
                                     navController.navigate("view_item_details/${wardrobeId}/${itemId}")
                                 },
@@ -339,6 +336,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 filterItems = { nameFilter, selectedCategory, selectedTags ->
                                     viewModel.filterItems(wardrobeId, nameFilter, selectedCategory, selectedTags)
+                                },
+                                onSaveCollectionClicked = { collectionName ->
+                                    viewModel.saveCollectionToWardrobe(wardrobeId, collectionName)
                                 }
                             )
                         }
@@ -366,7 +366,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-                        composable("create_collection") {
+                        composable("view_collections") {
 
                         }
                     }

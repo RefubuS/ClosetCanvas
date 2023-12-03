@@ -1,9 +1,11 @@
 package com.filipzagulak.closetcanvas.presentation.view_all_items
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.filipzagulak.closetcanvas.data.remote.WardrobeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class ViewAllItemsViewModel: ViewModel() {
     private val _state = MutableStateFlow(
@@ -45,6 +47,12 @@ class ViewAllItemsViewModel: ViewModel() {
             selectedTags
         ) { filteredItemList ->
             _state.value = _state.value.copy(itemList = filteredItemList)
+        }
+    }
+
+    fun saveCollectionToWardrobe(wardrobeId: String, collectionName: String) {
+        viewModelScope.launch {
+            wardrobeRepository.saveCollection(wardrobeId, collectionName, _state.value.selectedItems)
         }
     }
 }
