@@ -65,7 +65,8 @@ fun ViewAllItemsScreen(
     viewItemDetails: (String) -> Unit,
     onItemLongClick: (String) -> Unit,
     filterItems: (String, String, Set<String>) -> Unit,
-    onSaveCollectionClicked: (String) -> Unit
+    onSaveCollectionClicked: (String) -> Unit,
+    clearSelectedItems: () -> Unit
 ) {
     var numberSelected by remember { mutableIntStateOf(0) }
     var filteringDialogOpened by remember { mutableStateOf(false) }
@@ -142,6 +143,7 @@ fun ViewAllItemsScreen(
                             .combinedClickable(
                                 onClick = {
                                     viewItemDetails(wardrobeItem.itemId)
+                                    clearSelectedItems()
                                 },
                                 onLongClick = {
                                     if (state.selectedItems.contains(wardrobeItem.itemId)) {

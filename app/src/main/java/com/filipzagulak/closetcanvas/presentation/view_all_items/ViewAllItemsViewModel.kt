@@ -55,4 +55,8 @@ class ViewAllItemsViewModel: ViewModel() {
             wardrobeRepository.saveCollection(wardrobeId, collectionName, _state.value.selectedItems)
         }
     }
+
+    fun clearSelectedItems() {
+        _state.value = _state.value.copy(selectedItems = emptyList())
+    }
 }

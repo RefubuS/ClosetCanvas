@@ -37,8 +37,12 @@ import com.filipzagulak.closetcanvas.presentation.sign_in.SignInScreen
 import com.filipzagulak.closetcanvas.presentation.sign_in.SignInViewModel
 import com.filipzagulak.closetcanvas.presentation.view_all_items.ViewAllItemsScreen
 import com.filipzagulak.closetcanvas.presentation.view_all_items.ViewAllItemsViewModel
+import com.filipzagulak.closetcanvas.presentation.view_collections.ViewCollectionsScreen
+import com.filipzagulak.closetcanvas.presentation.view_collections.ViewCollectionsViewModel
 import com.filipzagulak.closetcanvas.presentation.view_items.ViewItemsScreen
 import com.filipzagulak.closetcanvas.presentation.view_items.ViewItemsViewModel
+import com.filipzagulak.closetcanvas.presentation.view_items_from_collection.ViewItemsFromCollectionScreen
+import com.filipzagulak.closetcanvas.presentation.view_items_from_collection.ViewItemsFromCollectionViewModel
 import com.filipzagulak.closetcanvas.presentation.view_wardrobe_layout.ViewLayoutScreen
 import com.filipzagulak.closetcanvas.presentation.view_wardrobe_layout.ViewLayoutViewModel
 import com.filipzagulak.closetcanvas.ui.theme.ClosetCanvasTheme
@@ -339,6 +343,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onSaveCollectionClicked = { collectionName ->
                                     viewModel.saveCollectionToWardrobe(wardrobeId, collectionName)
+                                },
+                                clearSelectedItems = {
+                                    viewModel.clearSelectedItems()
                                 }
                             )
                         }
@@ -366,8 +373,60 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-                        composable("view_collections") {
+                        composable("view_collections/{wardrobeId}") { navBackStackEntry ->
+                            val viewModel = viewModel<ViewCollectionsViewModel>()
+                            val state by viewModel.state.collectAsStateWithLifecycle()
+                            val wardrobeId = navBackStackEntry.arguments?.getString("wardrobeId") ?: ""
 
+                            LaunchedEffect(key1 = Unit) {
+                                viewModel.fetchAllCollectionFromFirebase(wardrobeId)
+                            }
+
+                            ViewCollectionsScreen(
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                state = state,
+                                onBackButtonClicked = {
+                                    navController.navigateUp()
+                                },
+                                onProfileIconClicked = {
+                                    navController.navigate("profile")
+                                },
+                                onCollectionCardClicked = { collectionId ->
+                                    navController.navigate("view_items_from_collection/${wardrobeId}/${collectionId}")
+                                },
+                                onDeleteCollection = { collectionId ->
+                                    lifecycleScope.launch {
+                                        viewModel.deleteCollection(wardrobeId, collectionId)
+                                    }
+                                    navController.popBackStack()
+                                    navController.navigate("view_collections/${wardrobeId}")
+                                }
+                            )
+                        }
+                        composable("view_items_from_collection/{wardrobeId}/{collectionId}") { navBackStackEntry ->
+                            val viewModel = viewModel<ViewItemsFromCollectionViewModel>()
+                            val state by viewModel.state.collectAsStateWithLifecycle()
+
+                            val wardrobeId = navBackStackEntry.arguments?.getString("wardrobeId") ?: ""
+                            val collectionId = navBackStackEntry.arguments?.getString("collectionId") ?: ""
+
+                            LaunchedEffect(key1 = Unit) {
+                                viewModel.fetchItemsFromCollection(wardrobeId, collectionId)
+                            }
+
+                            ViewItemsFromCollectionScreen(
+                                state = state,
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                onProfileIconClicked = {
+                                    navController.navigate("profile")
+                                },
+                                onBackButtonClicked = {
+                                    navController.navigateUp()
+                                },
+                                viewItemDetails = { itemId ->
+                                    navController.navigate("view_item_details/${wardrobeId}/${itemId}")
+                                }
+                            )
                         }
                     }
                 }

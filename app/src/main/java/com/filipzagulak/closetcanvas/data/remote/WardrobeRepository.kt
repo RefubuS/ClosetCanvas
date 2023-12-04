@@ -6,6 +6,7 @@ import com.filipzagulak.closetcanvas.presentation.add_item.ItemDTO
 import com.filipzagulak.closetcanvas.presentation.choose_wardrobe.WardrobeData
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe_layout.LayoutItem
 import com.filipzagulak.closetcanvas.presentation.item_details.ItemDetailsState
+import com.filipzagulak.closetcanvas.presentation.view_collections.CollectionItem
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -255,5 +256,85 @@ class WardrobeRepository private constructor() {
         )
 
         newCollectionDocumentReference.set(collectionData).await()
+    }
+
+    fun getAllCollections(wardrobeId: String, completion: (List<CollectionItem>) -> Unit) {
+        val wardrobeDocumentReference = db.collection("wardrobes").document(wardrobeId)
+        val collectionCollectionReference = wardrobeDocumentReference.collection("collections")
+
+        collectionCollectionReference.get()
+            .addOnSuccessListener { snapshot ->
+                val collections = snapshot.documents.map { document ->
+                    CollectionItem(
+                        collectionId = document.getString("collectionId") ?: "",
+                        collectionName = document.getString("collectionName") ?: ""
+                    )
+                }
+                completion(collections)
+            }
+            .addOnFailureListener { exception ->
+                completion(emptyList())
+                exception.printStackTrace()
+            }
+    }
+
+    suspend fun deleteCollection(wardrobeId: String, collectionId: String) {
+        val wardrobeDocumentReference = db.collection("wardrobes").document(wardrobeId)
+        val collectionItemReference = wardrobeDocumentReference.collection("collections").document(collectionId)
+
+        try {
+            collectionItemReference.delete().await()
+        } catch(exception: Exception) {
+            exception.printStackTrace()
+        }
+    }
+
+    fun getItemsFromCollection(wardrobeId: String, collectionId: String, completion: (List<WardrobeItem>) -> Unit) {
+        val itemsFromCollectionRef = db
+            .collection("wardrobes")
+            .document(wardrobeId)
+            .collection("collections")
+            .document(collectionId)
+
+        val itemsInWardrobeRef = db
+            .collection("wardrobes")
+            .document(wardrobeId)
+            .collection("items")
+
+        val itemsFromCollectionList = mutableListOf<WardrobeItem>()
+
+        itemsFromCollectionRef.get()
+            .addOnSuccessListener { collectionDocumentSnapshot ->
+                val itemsInCollection = collectionDocumentSnapshot.get("itemsInCollection") as? List<String>
+
+                if(itemsInCollection != null) {
+                    itemsInWardrobeRef.whereIn("itemId", itemsInCollection)
+                        .get()
+                        .addOnSuccessListener { wardrobeItemsQuerySnapshot ->
+                            for(wardrobeItemDocument in wardrobeItemsQuerySnapshot) {
+                                val itemId = wardrobeItemDocument.getString("itemId") ?: ""
+                                val itemPictureUrl = wardrobeItemDocument.getString("itemPictureUrl") ?: ""
+                                val wardrobeItem = WardrobeItem(
+                                    itemId = itemId,
+                                    wardrobeId = wardrobeId,
+                                    itemPictureUrl = itemPictureUrl
+                                )
+
+                                itemsFromCollectionList.add(wardrobeItem)
+                            }
+                            completion(itemsFromCollectionList)
+                        }
+                        .addOnFailureListener { exception ->
+                            exception.printStackTrace()
+                            completion(emptyList())
+                        }
+                } else {
+                    completion(emptyList())
+                }
+            }
+            .addOnFailureListener { exception ->
+                exception.printStackTrace()
+                completion(emptyList())
+            }
     }
 }
