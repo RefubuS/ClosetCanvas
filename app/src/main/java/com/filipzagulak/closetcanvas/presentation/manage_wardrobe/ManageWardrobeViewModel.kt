@@ -1,10 +1,12 @@
 package com.filipzagulak.closetcanvas.presentation.manage_wardrobe
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.filipzagulak.closetcanvas.R
 import com.filipzagulak.closetcanvas.data.remote.WardrobeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class ManageWardrobeViewModel: ViewModel() {
     val wardrobeRepository = WardrobeRepository.getInstance()
@@ -19,12 +21,28 @@ class ManageWardrobeViewModel: ViewModel() {
     private val _state = MutableStateFlow(
         ManageWardrobeState(
             wardrobeId = "",
-            tileItems = tileItems
+            tileItems = emptyList()
         )
     )
     val state = _state.asStateFlow()
 
-    fun updateWardrobeId(wardrobeId: String?) {
+    fun updateWardrobeDetails(wardrobeId: String) {
         _state.value = _state.value.copy(wardrobeId = wardrobeId)
+
+        viewModelScope.launch {
+            wardrobeRepository.checkIfLayoutExists(wardrobeId) { layoutItemList ->
+                val layoutItemListExists = layoutItemList
+                updateTileItems(layoutItemListExists)
+            }
+        }
+    }
+
+    private fun updateTileItems(layoutItemListExists: Boolean) {
+        val updatedTileItems = if (layoutItemListExists) {
+            tileItems.filter { it.text != "Add wardrobe layout" }
+        } else {
+            listOf(tileItems.first { it.text == "Add wardrobe layout" })
+        }
+        _state.value = _state.value.copy(tileItems = updatedTileItems)
     }
 }

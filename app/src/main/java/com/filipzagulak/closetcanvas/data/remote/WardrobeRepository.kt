@@ -337,4 +337,22 @@ class WardrobeRepository private constructor() {
                 completion(emptyList())
             }
     }
+
+    fun checkIfLayoutExists(wardrobeId: String, completion: (Boolean) -> Unit) {
+        db.collection("wardrobes")
+            .document(wardrobeId)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                val map = documentSnapshot.data ?: emptyMap()
+                if(map.contains("layoutItemList")) {
+                    completion(true)
+                } else {
+                    completion(false)
+                }
+            }
+            .addOnFailureListener { exception ->
+                exception.printStackTrace()
+                completion(false)
+            }
+    }
 }

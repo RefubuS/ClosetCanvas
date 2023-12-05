@@ -185,12 +185,13 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-                        composable("manage_wardrobe/{wardrobeId}") {
+                        composable("manage_wardrobe/{wardrobeId}") { navBackStackEntry ->
                             val viewModel = viewModel<ManageWardrobeViewModel>()
                             val state by viewModel.state.collectAsStateWithLifecycle()
+                            val wardrobeId = navBackStackEntry.arguments?.getString("wardrobeId") ?: ""
 
                             LaunchedEffect(key1 = Unit) {
-                                viewModel.updateWardrobeId(it.arguments?.getString("wardrobeId"))
+                                viewModel.updateWardrobeDetails(wardrobeId)
                             }
 
                             ManageWardrobeScreen(
