@@ -355,4 +355,30 @@ class WardrobeRepository private constructor() {
                 completion(false)
             }
     }
+
+    fun getPhotosUrls(wardrobeId: String, completion: (List<String>) -> Unit) {
+        db.collection("wardrobes")
+            .document(wardrobeId)
+            .collection("items")
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val itemPictureUrls = querySnapshot.documents.mapNotNull { document ->
+                    document.getString("itemPictureUrl")
+                }
+                completion(itemPictureUrls)
+            }
+            .addOnFailureListener { exception ->
+                exception.printStackTrace()
+                completion(emptyList())
+            }
+    }
+
+    fun deleteWardrobe(wardrobeId: String) {
+        db.collection("wardrobes")
+            .document(wardrobeId)
+            .delete()
+            .addOnSuccessListener {
+                Log.d("WardrobeRepository", "Wardrobe deleted successfully")
+            }
+    }
 }

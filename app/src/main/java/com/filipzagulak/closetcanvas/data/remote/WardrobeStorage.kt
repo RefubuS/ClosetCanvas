@@ -1,6 +1,7 @@
 package com.filipzagulak.closetcanvas.data.remote
 
 import android.net.Uri
+import android.util.Log
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlin.coroutines.resume
@@ -39,6 +40,17 @@ class WardrobeStorage private constructor() {
             } else {
                 continuation.resumeWithException(task.exception ?: RuntimeException("Failed to upload image"))
             }
+        }
+    }
+
+    fun deletePhotosFromStorage(photoUrlsList: List<String>) {
+        for(downloadUrl in photoUrlsList) {
+            val fileRef = storage.getReferenceFromUrl(downloadUrl)
+
+            fileRef.delete()
+                .addOnSuccessListener {
+                    Log.d("WardrobeStorage", "File deleted successfully: $downloadUrl")
+                }
         }
     }
 }

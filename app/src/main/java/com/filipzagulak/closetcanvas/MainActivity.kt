@@ -160,6 +160,11 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onWardrobeSelected = { wardrobeId ->
                                     navController.navigate("manage_wardrobe/${wardrobeId}")
+                                },
+                                onDeleteWardrobe = { wardrobeId ->
+                                    viewModel.deleteWardrobe(wardrobeId)
+                                    navController.navigateUp()
+                                    navController.navigate("wardrobes")
                                 }
                             )
                         }
