@@ -170,7 +170,7 @@ fun AddItemScreen(
                         onValueChange = {
                             selectedDate = it
                         },
-                        label = { Text("Last washed date") },
+                        label = { Text("Last Washed Date") },
                         trailingIcon = {
                             IconButton(
                                 onClick = {

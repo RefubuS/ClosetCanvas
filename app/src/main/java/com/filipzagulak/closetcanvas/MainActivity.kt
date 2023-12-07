@@ -27,6 +27,8 @@ import com.filipzagulak.closetcanvas.presentation.create_wardrobe.CreateWardrobe
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe.CreateWardrobeViewModel
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe_layout.CreateWardrobeLayoutScreen
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe_layout.CreateWardrobeLayoutViewModel
+import com.filipzagulak.closetcanvas.presentation.edit_item_details.EditItemDetailsScreen
+import com.filipzagulak.closetcanvas.presentation.edit_item_details.EditItemDetailsViewModel
 import com.filipzagulak.closetcanvas.presentation.item_details.ItemDetailsScreen
 import com.filipzagulak.closetcanvas.presentation.item_details.ItemDetailsViewModel
 import com.filipzagulak.closetcanvas.presentation.manage_wardrobe.ManageWardrobeScreen
@@ -57,6 +59,7 @@ class MainActivity : ComponentActivity() {
             oneTapClient = Identity.getSignInClient(applicationContext)
         )
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -376,6 +379,13 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onBackButtonClicked = {
                                     navController.navigateUp()
+                                },
+                                onEditButtonClicked = {
+                                    navController.navigate("edit_item_details/${wardrobeId}/${itemId}")
+                                },
+                                onDeleteItem = {
+                                    viewModel.deleteItem(wardrobeId, itemId)
+                                    navController.navigateUp()
                                 }
                             )
                         }
@@ -431,6 +441,37 @@ class MainActivity : ComponentActivity() {
                                 },
                                 viewItemDetails = { itemId ->
                                     navController.navigate("view_item_details/${wardrobeId}/${itemId}")
+                                }
+                            )
+                        }
+                        composable("edit_item_details/{wardrobeId}/{itemId}") { navBackStackEntry ->
+                            val viewModel = viewModel<EditItemDetailsViewModel>()
+                            val state by viewModel.state.collectAsStateWithLifecycle()
+
+                            val wardrobeId = navBackStackEntry.arguments?.getString("wardrobeId") ?: ""
+                            val itemId = navBackStackEntry.arguments?.getString("itemId") ?: ""
+
+                            LaunchedEffect(key1 = Unit) {
+                                lifecycleScope.launch {
+                                    viewModel.initializeDetails(wardrobeId, itemId)
+                                }
+                            }
+
+                            EditItemDetailsScreen(
+                                state = state,
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                onBackButtonClicked = {
+                                    navController.navigateUp()
+                                },
+                                onProfileIconClicked = {
+                                    navController.navigate("profile")
+                                },
+                                onSaveChanges = {
+                                    viewModel.saveChanges(wardrobeId, itemId)
+                                    navController.navigateUp()
+                                },
+                                onTagClicked = { tag ->
+                                    viewModel.toggleTag(tag)
                                 }
                             )
                         }

@@ -5,6 +5,7 @@ import com.filipzagulak.closetcanvas.data.local.WardrobeItem
 import com.filipzagulak.closetcanvas.presentation.add_item.ItemDTO
 import com.filipzagulak.closetcanvas.presentation.choose_wardrobe.WardrobeData
 import com.filipzagulak.closetcanvas.presentation.create_wardrobe_layout.LayoutItem
+import com.filipzagulak.closetcanvas.presentation.edit_item_details.ItemDetails
 import com.filipzagulak.closetcanvas.presentation.item_details.ItemDetailsState
 import com.filipzagulak.closetcanvas.presentation.view_collections.CollectionItem
 import com.google.firebase.firestore.Query
@@ -377,8 +378,52 @@ class WardrobeRepository private constructor() {
         db.collection("wardrobes")
             .document(wardrobeId)
             .delete()
-            .addOnSuccessListener {
-                Log.d("WardrobeRepository", "Wardrobe deleted successfully")
+    }
+
+    suspend fun saveChangesToItem(
+        wardrobeId: String,
+        itemId: String,
+        itemDetails: ItemDetails
+    ) {
+        val itemData = hashMapOf(
+            "itemName" to itemDetails.itemName,
+            "itemDescription" to itemDetails.itemDescription,
+            "itemCategory" to itemDetails.itemCategory,
+            "itemTags" to itemDetails.itemTags,
+            "lastWashed" to itemDetails.lastWashedDate
+        )
+
+        db.collection("wardrobes")
+            .document(wardrobeId)
+            .collection("items")
+            .document(itemId)
+            .update(itemData)
+            .await()
+    }
+
+    fun getPhotoUrl(wardrobeId: String, itemId: String, completion: (String) -> Unit) {
+        db.collection("wardrobes")
+            .document(wardrobeId)
+            .collection("items")
+            .document(itemId)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                val itemPictureUrl = documentSnapshot.getString("itemPictureUrl")
+                if (itemPictureUrl != null) {
+                    completion(itemPictureUrl)
+                }
             }
+            .addOnFailureListener { exception ->
+                exception.printStackTrace()
+                completion("")
+            }
+    }
+
+    fun deleteItem(wardrobeId: String, itemId: String) {
+        db.collection("wardrobes")
+            .document(wardrobeId)
+            .collection("items")
+            .document(itemId)
+            .delete()
     }
 }
