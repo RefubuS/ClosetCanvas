@@ -74,4 +74,4 @@ When creating the user interface, I wanted to keep it simple, so that the user w
 
 ## License
 > [!CAUTION]
-> Since this is a project done as part of my engineering thesis for college, in its current state, it is forbidden to use the application code for commercial purposes, due to the policy of the Cracow University of Technology.
+> Since this is a project done as part of my engineering thesis, in its current state, it is forbidden to use the application code for commercial purposes, due to the policy of the Cracow University of Technology.
