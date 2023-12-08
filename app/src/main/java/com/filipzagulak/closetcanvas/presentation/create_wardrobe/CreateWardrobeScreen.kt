@@ -20,6 +20,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +44,7 @@ fun CreateWardrobeScreen(
     onBackButtonClicked: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    var isWardrobeNameValid by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -95,6 +100,7 @@ fun CreateWardrobeScreen(
                 value = state.wardrobeName.value,
                 onValueChange = { newState: String ->
                     state.wardrobeName.value = newState
+                    isWardrobeNameValid = false
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
@@ -105,8 +111,19 @@ fun CreateWardrobeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                label = { Text("Wardrobe Name") }
+                label = { Text("Wardrobe Name") },
+                isError = isWardrobeNameValid
             )
+            if (isWardrobeNameValid) {
+                Text(
+                    text = "Please enter valid name",
+                    style = MaterialTheme.typography.labelMedium,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
 
             Row(
                 modifier = Modifier
@@ -116,7 +133,15 @@ fun CreateWardrobeScreen(
             ) {
                 Button(
                     onClick = {
-                        onWardrobeCreated(userData?.userId, state.wardrobeName.value, state.selectedIconColor.value)
+                        if (state.wardrobeName.value.isEmpty()) {
+                            isWardrobeNameValid = true
+                        } else {
+                            onWardrobeCreated(
+                                userData?.userId,
+                                state.wardrobeName.value,
+                                state.selectedIconColor.value
+                            )
+                        }
                     }
                 ) {
                     Text(text = "Save")

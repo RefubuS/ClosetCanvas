@@ -300,6 +300,8 @@ fun ViewAllItemsScreen(
             }
         }
         if(saveCollectionDialogOpened) {
+            var isCollectionNameValid by remember { mutableStateOf(false) }
+
             Dialog(
                 onDismissRequest = {
                     saveCollectionDialogOpened = false
@@ -307,7 +309,7 @@ fun ViewAllItemsScreen(
             ) {
                 Card(
                     modifier = Modifier
-                        .height(200.dp),
+                        .height(190.dp),
                     shape = RoundedCornerShape(16.dp),
                 ) {
                     Column(
@@ -332,8 +334,17 @@ fun ViewAllItemsScreen(
                             },
                             onValueChange = {
                                 collectionName = it
-                            }
+                                isCollectionNameValid = false
+                            },
+                            isError = isCollectionNameValid
                         )
+                        if(isCollectionNameValid) {
+                            Text(
+                                text = "Please enter valid name",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -342,8 +353,12 @@ fun ViewAllItemsScreen(
                         ) {
                             Button(
                                 onClick = {
-                                    onSaveCollectionClicked(collectionName)
-                                    saveCollectionDialogOpened = false
+                                    if(collectionName.isNotEmpty()) {
+                                        onSaveCollectionClicked(collectionName)
+                                        saveCollectionDialogOpened = false
+                                    } else {
+                                        isCollectionNameValid = true
+                                    }
                                 }
                             ) {
                                 Text("Save")

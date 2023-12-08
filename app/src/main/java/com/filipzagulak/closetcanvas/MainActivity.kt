@@ -180,13 +180,7 @@ class MainActivity : ComponentActivity() {
                                 userData = googleAuthUiClient.getSignedInUser(),
                                 onWardrobeCreated = { userId, wardrobeName, wardrobeIconColor ->
                                     viewModel.saveWardrobeToRepository(userId, wardrobeName, wardrobeIconColor)
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Wardrobe created successfully",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-
-                                    navController.navigate("wardrobes")
+                                    navController.navigateUp()
                                 },
                                 onBackButtonClicked = {
                                     navController.navigateUp()
@@ -283,6 +277,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onAddButtonClicked = {
                                     navController.navigate("add_item/${wardrobeId}/${spaceId}")
+                                },
+                                viewItemDetails = { itemId ->
+                                    navController.navigate("view_item_details/${wardrobeId}/${itemId}")
                                 }
                             )
                         }

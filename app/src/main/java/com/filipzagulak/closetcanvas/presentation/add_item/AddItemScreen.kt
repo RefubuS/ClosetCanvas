@@ -31,6 +31,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -43,7 +44,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -68,6 +68,14 @@ fun AddItemScreen(
                           String,
                           String) -> Unit
 ) {
+    var outlineColor = MaterialTheme.colorScheme.outline
+    var iconColor = MaterialTheme.colorScheme.primary
+    var isNameValid by remember { mutableStateOf(false) }
+    var isPhotoUrlValid by remember { mutableStateOf(false) }
+    var isSelectedDateValid by remember { mutableStateOf(false) }
+    var isDescriptionValid by remember { mutableStateOf(false) }
+    var isSelectedTagsEmpty by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
     val datePickerState = rememberDatePickerState()
 
@@ -113,11 +121,15 @@ fun AddItemScreen(
                                 .fillMaxSize()
                         )
                     } else {
+                        if(isPhotoUrlValid) {
+                            outlineColor = MaterialTheme.colorScheme.error
+                            iconColor = MaterialTheme.colorScheme.error
+                        }
                         Box(
                             modifier = Modifier
                                 .size(238.dp)
                                 .padding(8.dp)
-                                .border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
+                                .border(1.dp, outlineColor, shape = RoundedCornerShape(16.dp)),
                             contentAlignment = Alignment.Center
                         ) {
                             IconButton(
@@ -125,14 +137,23 @@ fun AddItemScreen(
                                     val uri = ComposeFileProvider.getImageUri(context)
                                     imageUri = uri
                                     cameraLauncher.launch(uri)
+                                    isPhotoUrlValid = false
                                 }
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.AddCircle,
                                     contentDescription = null,
-                                    modifier = Modifier.size(48.dp)
+                                    modifier = Modifier.size(48.dp),
+                                    tint = iconColor
                                 )
                             }
+                        }
+                        if(isPhotoUrlValid) {
+                            Text(
+                                text = "Please take a photo before saving",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.error
+                            )
                         }
                     }
                 }
@@ -148,7 +169,10 @@ fun AddItemScreen(
                         items(addItemState.availableTags) { tag ->
                             FilterChip(
                                 selected = addItemState.selectedTags.contains(tag),
-                                onClick = { onTagClicked(tag) },
+                                onClick = {
+                                    onTagClicked(tag)
+                                    isSelectedTagsEmpty = false
+                                },
                                 label = {
                                     Text(tag)
                                 },
@@ -165,29 +189,54 @@ fun AddItemScreen(
                             )
                         }
                     }
+                    if(isSelectedTagsEmpty) {
+                        Text(
+                            text = "Please select at least one tag",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
                 item {
                     OutlinedTextField(
                         value = name,
                         onValueChange = {
                             name = it
+                            isNameValid = false
                         },
                         label = { Text("Item Name") },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 8.dp, start = 8.dp, end = 8.dp)
+                            .padding(bottom = 8.dp, start = 8.dp, end = 8.dp),
+                        isError = isNameValid
                     )
+                    if(isNameValid) {
+                        Text(
+                            text = "Please enter valid name",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
 
                     OutlinedTextField(
                         value = description,
                         onValueChange = {
                             description = it
+                            isDescriptionValid = false
                         },
                         label = { Text("Description") },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 8.dp, start = 8.dp, end = 8.dp)
+                            .padding(bottom = 8.dp, start = 8.dp, end = 8.dp),
+                        isError = isDescriptionValid
                     )
+                    if(isDescriptionValid) {
+                        Text(
+                            text = "Please enter valid description",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
 
                     OutlinedTextField(
                         readOnly = true,
@@ -210,8 +259,16 @@ fun AddItemScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 8.dp, start = 8.dp, end = 8.dp)
+                            .padding(bottom = 8.dp, start = 8.dp, end = 8.dp),
+                        isError = isSelectedDateValid
                     )
+                    if(isSelectedDateValid) {
+                        Text(
+                            text = "Please select valid date in Date Picker",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
 
                     if(isDatePickerVisible) {
                         DatePickerDialog(
@@ -221,7 +278,10 @@ fun AddItemScreen(
                             confirmButton = {
                                 TextButton(
                                     onClick = {
-                                        selectedDate = convertMillisToDate(datePickerState.selectedDateMillis)
+                                        if(datePickerState.selectedDateMillis != null) {
+                                            selectedDate = convertMillisToDate(datePickerState.selectedDateMillis)
+                                        }
+                                        isSelectedDateValid = false
                                         isDatePickerVisible = false
                                     }
                                 ) {
@@ -280,14 +340,21 @@ fun AddItemScreen(
                 item {
                     Button(
                         onClick = {
-                            onSaveButtonClicked(
-                                imageUri,
-                                addItemState.selectedTags,
-                                name.text,
-                                description.text,
-                                selectedCategory,
-                                selectedDate
-                            )
+                            when {
+                                imageUri == null -> isPhotoUrlValid = true
+                                addItemState.selectedTags.isEmpty() -> isSelectedTagsEmpty = true
+                                name.text.isEmpty() -> isNameValid = true
+                                description.text.isEmpty() -> isDescriptionValid = true
+                                selectedDate.isEmpty() -> isSelectedDateValid = true
+                                else -> onSaveButtonClicked(
+                                    imageUri,
+                                    addItemState.selectedTags,
+                                    name.text,
+                                    description.text,
+                                    selectedCategory,
+                                    selectedDate
+                                )
+                            }
                         },
                         modifier = Modifier
                             .padding(8.dp)

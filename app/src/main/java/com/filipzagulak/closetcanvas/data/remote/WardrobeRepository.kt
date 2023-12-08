@@ -63,9 +63,6 @@ class WardrobeRepository private constructor() {
 
             val itemsCollection = wardrobeReference.collection("items")
             itemsCollection.add(hashMapOf<String, Any>()).await()
-
-            val collectionsCollection = wardrobeReference.collection("collections")
-            collectionsCollection.add(hashMapOf<String, Any>()).await()
         } catch (e: Exception) {
             e.printStackTrace()
         }

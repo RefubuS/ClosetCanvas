@@ -25,6 +25,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.filipzagulak.closetcanvas.presentation.add_item.AddItemViewModel
@@ -52,6 +54,11 @@ fun EditItemDetailsScreen(
     onSaveChanges: () -> Unit,
     onTagClicked: (String) -> Unit
 ) {
+    var isNameValid by remember { mutableStateOf(false) }
+    var isSelectedDateValid by remember { mutableStateOf(false) }
+    var isDescriptionValid by remember { mutableStateOf(false) }
+    var isSelectedTagsEmpty by remember { mutableStateOf(false) }
+
     val viewModelHelper = AddItemViewModel()
     val availableCategories = viewModelHelper.getCategories()
     val availableTags = viewModelHelper.getAvailableTags()
@@ -73,7 +80,13 @@ fun EditItemDetailsScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    onSaveChanges()
+                    when {
+                        state.itemName.value.isEmpty() -> isNameValid = true
+                        state.itemDescription.value.isEmpty() -> isDescriptionValid = true
+                        state.lastWashedDate.value.isEmpty() -> isSelectedDateValid = true
+                        state.itemTags.isEmpty() -> isSelectedTagsEmpty = true
+                        else -> onSaveChanges()
+                    }
                 }
             ) {
                 Icon(
@@ -86,29 +99,48 @@ fun EditItemDetailsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .padding(padding),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
                 OutlinedTextField(
                     value = state.itemName.value,
                     onValueChange = {
                         state.itemName.value = it
+                        isNameValid = false
                     },
                     label = { Text("Item Name") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
+                        .padding(8.dp),
+                    isError = isNameValid
                 )
+                if(isNameValid) {
+                    Text(
+                        text = "Please enter valid name",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
                 OutlinedTextField(
                     value = state.itemDescription.value,
                     onValueChange = {
                         state.itemDescription.value = it
+                        isDescriptionValid = false
                     },
                     label = { Text("Item Description") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
+                        .padding(8.dp),
+                    isError = isDescriptionValid
                 )
+                if(isDescriptionValid) {
+                    Text(
+                        text = "Please enter valid description",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
                 OutlinedTextField(
                     readOnly = true,
                     value = state.lastWashedDate.value,
@@ -130,8 +162,16 @@ fun EditItemDetailsScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
+                        .padding(8.dp),
+                    isError = isSelectedDateValid
                 )
+                if(isSelectedDateValid) {
+                    Text(
+                        text = "Please select valid date in Date Picker",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
 
                 if (isDatePickerVisible) {
                     DatePickerDialog(
@@ -143,6 +183,7 @@ fun EditItemDetailsScreen(
                                 onClick = {
                                     state.lastWashedDate.value =
                                         convertMillisToDate(datePickerState.selectedDateMillis)
+                                    isSelectedDateValid = false
                                     isDatePickerVisible = false
                                 }
                             ) {
@@ -154,6 +195,7 @@ fun EditItemDetailsScreen(
                             state = datePickerState
                         )
                     }
+
                 }
             }
             item {
@@ -208,7 +250,10 @@ fun EditItemDetailsScreen(
                     items(availableTags) { tag ->
                         FilterChip(
                             selected = state.itemTags.contains(tag),
-                            onClick = { onTagClicked(tag) },
+                            onClick = {
+                                onTagClicked(tag)
+                                isSelectedTagsEmpty = false
+                            },
                             label = {
                                 Text(tag)
                             },
@@ -224,6 +269,13 @@ fun EditItemDetailsScreen(
                             }
                         )
                     }
+                }
+                if(isSelectedTagsEmpty) {
+                    Text(
+                        text = "Please select at least one tag",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         }

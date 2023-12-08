@@ -1,5 +1,6 @@
 package com.filipzagulak.closetcanvas.presentation.view_items
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -25,7 +26,8 @@ fun ViewItemsScreen(
     userData: UserData?,
     onBackButtonClicked: () -> Unit,
     onProfileIconClicked: () -> Unit,
-    onAddButtonClicked: () -> Unit
+    onAddButtonClicked: () -> Unit,
+    viewItemDetails: (String) -> Unit
 ) {
     Scaffold(
         topBar = { TopClosetCanvasBar(
@@ -51,6 +53,9 @@ fun ViewItemsScreen(
                     Box(
                         modifier = Modifier
                             .padding(4.dp)
+                            .clickable {
+                                viewItemDetails(wardrobeItem.itemId)
+                            }
                     ) {
                         AsyncImage(
                             model = wardrobeItem.itemPictureUrl,
