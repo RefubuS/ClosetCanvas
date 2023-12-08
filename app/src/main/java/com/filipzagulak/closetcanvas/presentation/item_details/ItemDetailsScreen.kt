@@ -2,6 +2,7 @@ package com.filipzagulak.closetcanvas.presentation.item_details
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,6 +49,7 @@ fun ItemDetailsScreen(
     onDeleteItem: () -> Unit
 ) {
     var deleteDialogVisible by remember { mutableStateOf(false) }
+    val buttonBackgroundColor = MaterialTheme.colorScheme.primaryContainer
 
     Scaffold(
         topBar = { TopClosetCanvasBar(
@@ -110,25 +112,35 @@ fun ItemDetailsScreen(
                         .padding(4.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    IconButton(
-                        onClick = {
-                            onEditButtonClicked()
-                        }
+                    Box(
+                        modifier = Modifier
+                            .background(buttonBackgroundColor, shape = RoundedCornerShape(8.dp))
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit item details"
-                        )
+                        IconButton(
+                            onClick = {
+                                onEditButtonClicked()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit item details"
+                            )
+                        }
                     }
-                    IconButton(
-                        onClick = {
-                            deleteDialogVisible = true
-                        }
+                    Box(
+                        modifier = Modifier
+                            .background(buttonBackgroundColor, shape = RoundedCornerShape(8.dp))
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete item"
-                        )
+                        IconButton(
+                            onClick = {
+                                deleteDialogVisible = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete item"
+                            )
+                        }
                     }
                 }
                 if(deleteDialogVisible) {
@@ -172,7 +184,7 @@ fun ItemDetailsScreen(
 fun TextDisplay(type: String, details: String) {
     Column(
         modifier = Modifier
-            .padding(4.dp)
+            .padding(8.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.tertiaryContainer)
             .fillMaxWidth()

@@ -2,6 +2,7 @@ package com.filipzagulak.closetcanvas.presentation.edit_item_details
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -93,14 +94,20 @@ fun EditItemDetailsScreen(
                     onValueChange = {
                         state.itemName.value = it
                     },
-                    label = { Text("Item Name") }
+                    label = { Text("Item Name") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
                 )
                 OutlinedTextField(
                     value = state.itemDescription.value,
                     onValueChange = {
                         state.itemDescription.value = it
                     },
-                    label = { Text("Item Description") }
+                    label = { Text("Item Description") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
                 )
                 OutlinedTextField(
                     readOnly = true,
@@ -120,7 +127,10 @@ fun EditItemDetailsScreen(
                                 contentDescription = "Date picker"
                             )
                         }
-                    }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
                 )
 
                 if (isDatePickerVisible) {
@@ -155,7 +165,9 @@ fun EditItemDetailsScreen(
                 ) {
                     OutlinedTextField(
                         modifier = Modifier
-                            .menuAnchor(),
+                            .menuAnchor()
+                            .padding(8.dp)
+                            .fillMaxWidth(),
                         readOnly = true,
                         value = state.itemCategory.value,
                         onValueChange = { },
@@ -188,7 +200,8 @@ fun EditItemDetailsScreen(
                 LazyHorizontalStaggeredGrid(
                     rows = StaggeredGridCells.Fixed(5),
                     modifier = Modifier
-                        .height(180.dp),
+                        .height(180.dp)
+                        .padding(8.dp),
                     horizontalItemSpacing = 4.dp,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {

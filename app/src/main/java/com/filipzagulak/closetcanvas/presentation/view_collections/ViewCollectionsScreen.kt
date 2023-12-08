@@ -42,7 +42,7 @@ fun ViewCollectionsScreen(
     
     Scaffold(
         topBar = { TopClosetCanvasBar(
-            title = "Available collections",
+            title = "Available Collections",
             userData = userData,
             canNavigateBack = true,
             onProfileIconClicked = onProfileIconClicked,
@@ -106,7 +106,7 @@ fun CollectionCard(
 ) {
     Card(
         modifier = Modifier
-            .padding(4.dp)
+            .padding(start = 8.dp, top = 4.dp, bottom = 4.dp, end = 8.dp)
             .fillMaxWidth(),
         onClick = {
             onCollectionCardClicked(collection.collectionId)

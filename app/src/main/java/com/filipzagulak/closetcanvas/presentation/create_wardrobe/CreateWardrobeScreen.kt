@@ -5,10 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,9 +16,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -46,7 +44,7 @@ fun CreateWardrobeScreen(
     Scaffold(
         topBar = {
             TopClosetCanvasBar(
-                title = "Wardrobe creation",
+                title = "Create New Wardrobe",
                 userData = userData,
                 canNavigateBack = true,
                 onProfileIconClicked = { },
@@ -60,7 +58,7 @@ fun CreateWardrobeScreen(
                 .padding(padding)
         ) {
             Text(
-                text = "Select icon color",
+                text = "Select Icon Color",
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -84,8 +82,8 @@ fun CreateWardrobeScreen(
                             }
                             .padding(4.dp)
                             .border(
-                                width = 2.dp,
-                                color = if (color == state.selectedIconColor.value) MaterialTheme.colorScheme.outlineVariant else Color.Transparent,
+                                width = 3.dp,
+                                color = if (color == state.selectedIconColor.value) MaterialTheme.colorScheme.primary else Color.Transparent,
                                 shape = RoundedCornerShape(2.dp)
                             ),
                         tint = Color.Unspecified
@@ -93,9 +91,7 @@ fun CreateWardrobeScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TextField(
+            OutlinedTextField(
                 value = state.wardrobeName.value,
                 onValueChange = { newState: String ->
                     state.wardrobeName.value = newState
@@ -106,14 +102,16 @@ fun CreateWardrobeScreen(
                         keyboardController?.hide()
                     }
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                label = { Text("Wardrobe Name") }
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(

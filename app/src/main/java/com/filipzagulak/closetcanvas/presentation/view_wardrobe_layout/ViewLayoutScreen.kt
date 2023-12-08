@@ -3,7 +3,7 @@ package com.filipzagulak.closetcanvas.presentation.view_wardrobe_layout
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -11,11 +11,9 @@ import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.filipzagulak.closetcanvas.R
@@ -35,7 +33,7 @@ fun ViewLayoutScreen(
     Scaffold(
         topBar = {
             TopClosetCanvasBar(
-                title = "Select Space In Your Wardrobe",
+                title = "Select Space",
                 userData = userData,
                 canNavigateBack = true,
                 onProfileIconClicked = onProfileIconClicked,
@@ -53,7 +51,7 @@ fun ViewLayoutScreen(
                     )
                 }
             },
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier
                 .padding(padding)
         )
@@ -77,16 +75,17 @@ fun LayoutItemComposable(
                     onLayoutItemClicked(layoutItem.itemId)
                 }
             }
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(4.dp),
         content = {
             Image(
                 painter = painterResource(id = resourceId),
                 contentDescription = null,
                 modifier = Modifier
+                    .fillMaxSize()
                     .size(96.dp)
-                    .clip(MaterialTheme.shapes.large)
-                    .padding(2.dp)
+                    .padding(4.dp)
+
             )
         }
     )

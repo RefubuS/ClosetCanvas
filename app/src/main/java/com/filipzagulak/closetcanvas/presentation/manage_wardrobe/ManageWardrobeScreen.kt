@@ -53,7 +53,7 @@ fun ManageWardrobeScreen(
                     ClickableCard(item, navigateToScreen = navigateToScreen)
                     Spacer(
                         modifier = Modifier
-                            .height(16.dp)
+                            .height(8.dp)
                     )
                 }
             }
@@ -69,7 +69,7 @@ fun ClickableCard(item: TileItem, navigateToScreen: (String) -> Unit) {
             .clickable {
                 navigateToScreen(item.routeName)
             }
-            .padding(4.dp),
+            .padding(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -88,7 +88,9 @@ fun ClickableCard(item: TileItem, navigateToScreen: (String) -> Unit) {
             )
             Text(
                 text = item.text,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .padding(top = 8.dp)
             )
         }
     }

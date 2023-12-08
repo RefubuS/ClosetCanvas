@@ -5,12 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -56,7 +55,7 @@ fun ChooseWardrobeScreen(
 
     Scaffold(
         topBar = { TopClosetCanvasBar(
-            title = "Wardrobes Screen",
+            title = "Main Screen",
             userData = userData,
             canNavigateBack = false,
             onProfileIconClicked = onProfileIconClicked,
@@ -72,12 +71,14 @@ fun ChooseWardrobeScreen(
             ) {
                 Text(
                     text = "Welcome, ${userData?.username}",
-                    style = TextStyle(fontSize = 24.sp)
+                    style = MaterialTheme.typography.displaySmall,
+                    modifier = Modifier
+                        .padding(16.dp)
                 )
-                Spacer(modifier = Modifier.height(16.dp))
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(4.dp)
                         .background(color = MaterialTheme.colorScheme.background),
                     horizontalArrangement = Arrangement.Center,
                     content = {
@@ -95,8 +96,9 @@ fun ChooseWardrobeScreen(
                         }
                     }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
                 FloatingActionButton(
+                    modifier = Modifier
+                        .padding(16.dp),
                     onClick = onAddButtonClicked,
                     content = {
                         Icon(
@@ -152,6 +154,7 @@ fun WardrobeItem(
     Column(
         modifier = Modifier
             .padding(8.dp)
+            .width(120.dp)
             .combinedClickable(
                 onClick = {
                     onWardrobeSelected(wardrobeData.wardrobeId)
@@ -179,4 +182,3 @@ fun WardrobeItem(
         )
     }
 }
-

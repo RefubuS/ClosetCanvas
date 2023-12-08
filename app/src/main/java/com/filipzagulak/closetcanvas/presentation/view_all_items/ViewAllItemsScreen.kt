@@ -234,6 +234,7 @@ fun ViewAllItemsScreen(
                                 },
                                 modifier = Modifier
                                     .padding(4.dp)
+                                    .height(256.dp)
                             ) {
                                 availableCategories.forEach { category ->
                                     DropdownMenuItem(
@@ -250,7 +251,7 @@ fun ViewAllItemsScreen(
                             rows = StaggeredGridCells.Fixed(5),
                             modifier = Modifier
                                 .height(180.dp)
-                                .padding(4.dp),
+                                .padding(8.dp),
                             horizontalItemSpacing = 4.dp,
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
